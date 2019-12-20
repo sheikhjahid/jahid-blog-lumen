@@ -29,6 +29,10 @@ class PostController extends Controller
     {
         $post = $this->post->find($id);
 
+        $this->post->where('id',$id)->update([
+            'views' => $post->views + 1
+        ]);
+
         return response()->json($post);
     }
 
