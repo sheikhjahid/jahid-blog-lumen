@@ -55,9 +55,13 @@ $router->group([
             $app->put('edit/{id}', 'UserController@update');
         });
 
+        $app->group(['middleware' => ['auth','is_admin']], function($app)
+        {
+            $app->delete('delete/{id}','UserController@delete');
+        });
+
         $app->post('add', 'UserController@create');
 
-        $app->delete('delete/{id}','UserController@delete');
     });
 
    
