@@ -20,7 +20,7 @@ class PostController extends Controller
     public function index()
     {
        
-        $post = $this->post->all();
+        $post = $this->post->orderBy('id','desc')->get();
         return response()->json($post);
     }
 
@@ -29,9 +29,7 @@ class PostController extends Controller
     {
         $post = $this->post->find($id);
 
-        return response()->json([
-            'data' => $post
-        ]);
+        return response()->json($post);
     }
 
     public function create(Request $request)
@@ -69,12 +67,12 @@ class PostController extends Controller
         {
             return response()->json([
                 'message' => 'Unable to delete'
-            ]);
+            ],400);
         }
 
         return response()->json([
             'message' => 'Post data deleted successfully'
-        ]);
+        ],204);
 
     }
 

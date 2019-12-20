@@ -20,7 +20,7 @@ class UserController extends Controller
     public function index()
     {
        
-        $user = $this->user->all();
+        $user = $this->user->where('is_admin',false)->orderBy('id','desc')->get();
         return response()->json($user);
     }
 
@@ -29,9 +29,7 @@ class UserController extends Controller
     {
         $user = $this->user->find($id);
 
-        return response()->json([
-            'data' => $user
-        ]);
+        return response()->json($user);
     }
 
     public function create(Request $request)
@@ -79,7 +77,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Post data deleted successfully'
-        ]);
+        ],204);
 
     }
 
