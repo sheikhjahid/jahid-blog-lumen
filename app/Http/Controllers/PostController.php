@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\JWTAuth;
+
 class PostController extends Controller
 {
     /**
@@ -12,17 +14,18 @@ class PostController extends Controller
      * @return void
      */
     protected $post;
-    public function __construct(Post $post)
+    protected $jwt;
+    public function __construct(Post $post, JWTAuth $jwt)
     {
         $this->post = $post;
-       
+        $this->jwt = $jwt;
     }
 
     public function index()
     {
       
         try{
-            $post = $this->post->orderBy('id','desc')->get();
+            $post = $this->post->where('user_id','!=',$this->jwt->user()->id)->with('user')->orderBy('id','desc')->get();
         }
         catch(\Exception $e)
         {
@@ -36,11 +39,14 @@ class PostController extends Controller
     public function single(int $id)
     {
         try{
-            $post = $this->post->find($id);
+            $post = $this->post->with('user')->find($id);
 
-            $this->post->where('id',$id)->update([
-                'views' => $post->views + 1
-            ]);
+            if(!$this->jwt->user()->id)
+            {
+                $this->post->where('id',$id)->update([
+                    'views' => $post->views + 1
+                ]);
+            }
         }
         catch(\Exception $e)
         {
@@ -59,6 +65,9 @@ class PostController extends Controller
             $this->validate($request, [
                 'title' => 'required'
             ]);
+
+            $request['user_id'] = $this->jwt->user()->id;
+            $request['views'] = 0;
        
             $post = $this->post->create($request->all());
             DB::commit();
@@ -75,6 +84,7 @@ class PostController extends Controller
 
     public function update(Request $request, int $id)
     {
+       
         DB::beginTransaction();
         try{
 
@@ -94,6 +104,8 @@ class PostController extends Controller
             DB::rollback();
             $post = $e->getMessage();
         }
+
+        return response()->json($post);
     }
 
     public function delete(int $id)

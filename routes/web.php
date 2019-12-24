@@ -36,7 +36,7 @@ $router->group([
             $app->get('view/{id}', 'PostController@single');
             
         });
-            $app->post('add', 'PostController@create');
+            $app->post('create', 'PostController@create');
         
             $app->put('edit/{id}', 'PostController@update');
         
