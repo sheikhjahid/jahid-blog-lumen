@@ -13,11 +13,9 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@itobuz.com',
-            'password' => Hash::make('123456'),
-            'api_token' => Hash::make('admin@itobuz.com'),
-            'is_admin' => 1
+            'name' => 'Sheikh Jahid',
+            'email' => 'jahid@itobuz.com',
+            'password' => Hash::make('123456')
         ]);
     }
 }

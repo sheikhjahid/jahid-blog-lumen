@@ -16,53 +16,53 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+
+
 $router->group([
     'prefix' => 'api'
 ], function($app)
 {
+    $app->post('register', 'UserController@create');
+        
+    $app->post('login', 'UserController@login');
     
     $app->group(['prefix' => 'posts'], function($app)
     {
-        $app->group(['middleware' => 'auth'], function($app)
+        $app->group(['middleware' => 'jwt.auth'], function($app)
         {
+
             $app->get('list', 'PostController@index'); 
             
             $app->get('view/{id}', 'PostController@single');
             
         });
-
-        $app->group(['middleware' => ['auth','is_admin']], function($app)
-        {
             $app->post('add', 'PostController@create');
         
             $app->put('edit/{id}', 'PostController@update');
         
             $app->delete('delete/{id}','PostController@delete');
-        });
-        
-            
+        // test
+
     });
         
 
     $app->group(['prefix' => 'users'], function($app)
     {
-        $app->group(['middleware' => 'auth'], function($app)
+        
+
+        $app->group(['middleware' => 'jwt.auth'], function($app)
         {
             $app->get('list', 'UserController@index');
         
-            $app->get('view/{id}', 'UserController@single');
+            $app->get('profile', 'UserController@profile');
              
-            $app->put('edit/{id}', 'UserController@update');
-        });
+            $app->put('edit', 'UserController@update');
 
-        $app->group(['middleware' => ['auth','is_admin']], function($app)
-        {
-            $app->delete('delete/{id}','UserController@delete');
+            $app->delete('delete', 'UserController@delete');
         });
-
-        $app->post('add', 'UserController@create');
 
     });
 
-   
+    $app->get('logout', 'UserController@logout');
+
 });
